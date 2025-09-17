@@ -1,0 +1,35 @@
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import { clerkMiddleware } from "@clerk/express";
+import { clerkWebhook } from "./webhook/clerk.webhook";
+
+import promptsRouter from "./controllers/prompt.controller";
+import templatesRouter from "./controllers/template.controller";
+// remove or keep your old auth router if you still need it
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
+
+app.use("/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
+// IMPORTANT: add clerkMiddleware() once, before protected routes
+app.use(clerkMiddleware());
+
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+// now your routes (requireAuth will rely on clerkMiddleware)
+app.use("/prompts", promptsRouter);
+app.use("/templates", templatesRouter);
+
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error(err);
+  res
+    .status(err.status || 500)
+    .json({ error: err.message || "Internal Server Error" });
+});
+
+export default app;
