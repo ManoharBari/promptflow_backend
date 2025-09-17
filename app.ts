@@ -15,7 +15,11 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-app.use("/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
+app.use(
+  "/webhooks/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhook
+);
 // IMPORTANT: add clerkMiddleware() once, before protected routes
 app.use(clerkMiddleware());
 
@@ -24,6 +28,10 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 // now your routes (requireAuth will rely on clerkMiddleware)
 app.use("/prompts", promptsRouter);
 app.use("/templates", templatesRouter);
+
+app.get("/", (req, res) => {
+  res.send("Hello World! Welcome to PromptFlow Backend.");
+});
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err);
