@@ -7,7 +7,7 @@ export async function clerkWebhook(req: Request, res: Response) {
   const payload = req.body;
   const headers = req.headers;
 
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
+  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
   try {
     const evt = wh.verify(JSON.stringify(payload), headers as any) as {
