@@ -29,6 +29,10 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 app.use("/prompts", promptsRouter);
 app.use("/templates", templatesRouter);
 
+app.listen(5000, () => {
+  console.log(`PromptFlow backend listening on port 5000`);
+});
+
 app.get("/", (req, res) => {
   res.send("Hello World! Welcome to PromptFlow Backend.");
 });
