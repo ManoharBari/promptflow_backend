@@ -4,19 +4,20 @@ import prisma from "../prisma";
 import "dotenv/config";
 
 export async function clerkWebhook(req: Request, res: Response) {
-  const payload = req.body;
+  const payload = req.rawBody; 
   const headers = req.headers;
 
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
 
   try {
-    const evt = wh.verify(JSON.stringify(payload), headers as any) as {
+    const evt = wh.verify(payload, headers as any) as {
       type: string;
       data: any;
     };
 
     if (evt.type === "user.created" || evt.type === "user.updated") {
       const user = evt.data;
+
       await prisma.user.upsert({
         where: { clerkId: user.id },
         update: {
