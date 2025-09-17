@@ -1,6 +1,7 @@
 import { Webhook } from "svix";
 import { Request, Response } from "express";
 import prisma from "../prisma";
+import "dotenv/config";
 
 export async function clerkWebhook(req: Request, res: Response) {
   const payload = req.body;
@@ -9,7 +10,10 @@ export async function clerkWebhook(req: Request, res: Response) {
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
 
   try {
-    const evt = wh.verify(JSON.stringify(payload), headers as any) as { type: string; data: any };
+    const evt = wh.verify(JSON.stringify(payload), headers as any) as {
+      type: string;
+      data: any;
+    };
 
     if (evt.type === "user.created" || evt.type === "user.updated") {
       const user = evt.data;
