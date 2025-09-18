@@ -4,7 +4,6 @@ import cors from "cors";
 import morgan from "morgan";
 import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhook } from "./webhook/clerk.webhook";
-import bodyParser from "body-parser";
 
 import promptsRouter from "./controllers/prompt.controller";
 import templatesRouter from "./controllers/template.controller";
