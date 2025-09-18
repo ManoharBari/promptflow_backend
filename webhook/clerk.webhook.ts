@@ -4,13 +4,14 @@ import prisma from "../prisma";
 import "dotenv/config";
 
 export async function clerkWebhook(req: Request, res: Response) {
-  const payload = req.rawBody; 
+  const payload = req.body; // this is a Buffer
   const headers = req.headers;
 
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
 
   try {
-    const evt = wh.verify(payload, headers as any) as {
+    // Verify using raw buffer → string
+    const evt = wh.verify(payload.toString(), headers as any) as {
       type: string;
       data: any;
     };

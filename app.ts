@@ -13,18 +13,13 @@ import templatesRouter from "./controllers/template.controller";
 const app = express();
 
 app.use(cors());
-app.use(express.json());
 app.use(morgan("dev"));
 
-app.use(
-  bodyParser.json({
-    verify: (req: any, _res, buf) => {
-      req.rawBody = buf.toString();
-    },
-  })
+app.post(
+  "/webhooks/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhook
 );
-
-app.post("/webhooks/clerk", clerkWebhook);
 
 // IMPORTANT: add clerkMiddleware() once, before protected routes
 app.use(clerkMiddleware());
