@@ -7,8 +7,10 @@ export async function clerkWebhook(req: Request, res: Response) {
   const payload = req.body; // this is a Buffer
   const headers = req.headers;
 
+  console.log("Headers:", headers);
+  console.log("Raw body string:", payload.toString());
+  
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
-
   try {
     // Verify using raw buffer → string
     const evt = wh.verify(payload.toString(), headers as any) as {
