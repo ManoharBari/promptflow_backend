@@ -2,14 +2,14 @@
   "name": "promptflow-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.ts",
+    "start": "node app.ts",
     "build": "tsc",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
-    "dev": "nodemon --exec ts-node index.ts",
+    "dev": "nodemon --exec ts-node app.ts",
     "postinstall": "prisma generate"
   },
   "keywords": [],
