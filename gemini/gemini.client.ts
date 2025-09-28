@@ -8,7 +8,7 @@ if (!GEMINI_KEY) {
 const genAI = new GoogleGenerativeAI(GEMINI_KEY);
 
 // Model options: "gemini-1.5-flash" (fast/cheap) or "gemini-1.5-pro" (better reasoning)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 export async function generateJsonFromPrompt(plainTextPrompt: string) {
   const systemInstruction = `
