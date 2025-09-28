@@ -1,10 +1,7 @@
 import prisma from "../prisma";
-import { generateJsonFromPrompt } from "../gemini/gemini.client"; 
+import { generateJsonFromPrompt } from "../gemini/gemini.client";
 
-export async function createPrompt(
-  userId: string,
-  inputText: string,
-) {
+export async function createPrompt(userId: string, inputText: string) {
   const outputJson = await generateJsonFromPrompt(inputText);
 
   const prompt = await prisma.prompt.create({
