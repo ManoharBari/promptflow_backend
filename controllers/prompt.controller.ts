@@ -5,12 +5,15 @@ import * as service from "../prompt/prompt.service";
 
 const router = express.Router();
 
+const createSchema = z.object({
+  inputText: z.string().min(3),
+});
 
 // Protect all routes in this router (optional): router.use(requireAuth());
 router.post("/", requireAuth(), async (req, res, next) => {
   try {
-    const data = req.body;
-    
+    const data = createSchema.parse(req.body);
+
     // Get the authenticated user's id from the request
     const { userId } = getAuth(req);
     if (!userId) return res.status(401).json({ error: "Unauthorized" });

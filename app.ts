@@ -26,7 +26,7 @@ app.use(clerkMiddleware());
 app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 // now your routes (requireAuth will rely on clerkMiddleware)
-app.use("/prompts", promptsRouter);
+app.use("/prompts", express.json(), promptsRouter);
 app.use("/templates", templatesRouter);
 
 app.listen(5000, () => {
