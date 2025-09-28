@@ -4,7 +4,6 @@ const GEMINI_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_KEY) {
   throw new Error("GEMINI_API_KEY not set in env");
 }
-
 const genAI = new GoogleGenerativeAI(GEMINI_KEY);
 
 // Model options: "gemini-1.5-flash" (fast/cheap) or "gemini-1.5-pro" (better reasoning)
