@@ -10,13 +10,12 @@ const createSchema = z.object({
 });
 
 // Protect all routes in this router (optional): router.use(requireAuth());
-router.post("/", async (req, res, next) => {
+router.post("/", requireAuth(), async (req, res, next) => {
   try {
     const data = createSchema.parse(req.body);
 
     // Get the authenticated user's id from the request
     const { userId } = getAuth(req);
-    console.log("🔑 Authenticated userId:", userId);
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     // Call LLM service to generate/store prompt
