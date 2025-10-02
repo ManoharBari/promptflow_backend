@@ -16,6 +16,7 @@ router.post("/", requireAuth(), async (req, res, next) => {
 
     // Get the authenticated user's id from the request
     const { userId } = getAuth(req);
+    console.log(userId)
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     // Call LLM service to generate/store prompt
