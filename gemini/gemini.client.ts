@@ -1,17 +1,18 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 if (!GEMINI_KEY) {
   throw new Error("GEMINI_API_KEY not set in env");
 }
-const genAI = new GoogleGenerativeAI(GEMINI_KEY);
+const genAI = new GoogleGenAI({ apiKey: GEMINI_KEY });
 
 // Model options: "gemini-1.5-flash" (fast/cheap) or "gemini-1.5-pro" (better reasoning)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 export async function generateJsonFromPrompt(plainTextPrompt: string) {
   const systemInstruction = `
   You are an expert prompt engineer. Your task is to transform a user's plain English request into a high-performance JSON prompt specification.
+
+  user prompt: """${plainTextPrompt}"""
 
 Rules:
 1. Always output only valid JSON.
@@ -35,12 +36,14 @@ Dynamic behavior:
 
 Output ONLY the JSON. Do not include explanations, notes, or text outside JSON.`;
 
-  const result = await model.generateContent([
-    systemInstruction,
-    plainTextPrompt,
-  ]);
+  const response = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: systemInstruction,
+  });
 
-  const text = result.response.text();
+  const text = response.text;
+  console.log(text);
+
   if (!text) throw { status: 500, message: "Gemini returned empty response" };
 
   // Try parsing as JSON
