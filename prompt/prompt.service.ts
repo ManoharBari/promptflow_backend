@@ -6,7 +6,7 @@ export async function createPrompt(userId: string, inputText: string) {
 
   const prompt = await prisma.prompt.create({
     data: {
-      userId,
+      userId: userId,
       inputText,
       outputJson,
     },
