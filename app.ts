@@ -7,7 +7,7 @@ import { clerkWebhook } from "./webhook/clerk.webhook";
 
 import promptsRouter from "./controllers/prompt.controller";
 import templatesRouter from "./controllers/template.controller";
-// remove or keep your old auth router if you still need it
+import user from "./controllers/user.controller";
 
 const app = express();
 
@@ -28,6 +28,7 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 // now your routes (requireAuth will rely on clerkMiddleware)
 app.use("/prompts", express.json(), promptsRouter);
 app.use("/templates", templatesRouter);
+app.use("/me", user);
 
 app.listen(5000, () => {
   console.log(`PromptFlow backend listening on port 5000`);

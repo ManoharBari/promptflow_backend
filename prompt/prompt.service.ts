@@ -11,13 +11,21 @@ export async function createPrompt(userId: string, inputText: string) {
   if (!user) {
     throw new Error(`User not found for Clerk ID: ${userId}`);
   }
+  const prompt = await prisma.$transaction(async (tx) => {
+    // deduct token
+    await tx.user.update({
+      where: { id: user.id },
+      data: { tokens: { decrement: 1 } },
+    });
 
-  const prompt = await prisma.prompt.create({
-    data: {
-      userId: user.id, 
-      inputText,
-      outputJson,
-    },
+    // create prompt
+    return await tx.prompt.create({
+      data: {
+        userId: user.id,
+        inputText,
+        outputJson,
+      },
+    });
   });
 
   return prompt;

@@ -11,6 +11,7 @@ model User {
   id        String   @id @default(cuid())
   clerkId   String?  @unique
   email     String?
+  tokens    Int      @default(3)  
   name      String?
   imageUrl  String?
   createdAt DateTime @default(now())
