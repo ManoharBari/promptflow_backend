@@ -24,6 +24,7 @@ export async function clerkWebhook(req: Request, res: Response) {
       await prisma.user.upsert({
         where: { clerkId: user.id },
         update: {
+          tokens: 3,
           email: user.email_addresses[0]?.email_address,
           name: user.first_name
             ? `${user.first_name} ${user.last_name || ""}`.trim()
