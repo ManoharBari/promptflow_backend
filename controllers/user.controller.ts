@@ -4,7 +4,7 @@ import prisma from "../prisma";
 
 const router = Router();
 
-router.get("/", requireAuth(), async (req, res) => {
+router.get("/me", requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
 
   const user = await prisma.user.findUnique({

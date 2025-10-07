@@ -28,7 +28,7 @@ app.get("/health", (req, res) => res.json({ status: "ok" }));
 // now your routes (requireAuth will rely on clerkMiddleware)
 app.use("/prompts", express.json(), promptsRouter);
 app.use("/templates", templatesRouter);
-app.use("/me", user);
+app.use("/user", user);
 
 app.listen(5000, () => {
   console.log(`PromptFlow backend listening on port 5000`);
