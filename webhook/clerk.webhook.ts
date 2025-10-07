@@ -9,7 +9,7 @@ export async function clerkWebhook(req: Request, res: Response) {
 
   console.log("Headers:", headers);
   console.log("Raw body string:", payload.toString());
-  
+
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET as string);
   try {
     // Verify using raw buffer → string
@@ -32,6 +32,7 @@ export async function clerkWebhook(req: Request, res: Response) {
         },
         create: {
           clerkId: user.id,
+          tokens: 3,
           email: user.email_addresses[0]?.email_address,
           name: user.first_name
             ? `${user.first_name} ${user.last_name || ""}`.trim()
