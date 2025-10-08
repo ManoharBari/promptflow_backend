@@ -4,7 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhook } from "./webhook/clerk.webhook";
-
+import paymentWebhook from "./webhook/payment.webhook";
 import promptsRouter from "./controllers/prompt.controller";
 import templatesRouter from "./controllers/template.controller";
 import user from "./controllers/user.controller";
@@ -18,6 +18,12 @@ app.post(
   "/webhooks/clerk",
   express.raw({ type: "application/json" }),
   clerkWebhook
+);
+
+app.use(
+  "/webhook/payment",
+  express.json({ verify: (req, res, buf) => (req.rawBody = buf) }),
+  paymentWebhook
 );
 
 // IMPORTANT: add clerkMiddleware() once, before protected routes
