@@ -1,39 +1,59 @@
-   import express from "express";
+import express from "express";
 import prisma from "../prisma";
+import crypto from "crypto";
+
 const router = express.Router();
 
-// DodoPayment webhook endpoint
 router.post("/", async (req, res) => {
   try {
-    const payload = req.body;
+    const signature = req.headers["x-dodo-signature"];
 
-    // ✅ Step 1: Verify signature (DodoPayment usually sends a secret key)
-    const signature = req.headers["x-dodopayment-signature"];
-    if (signature !== process.env.DODO_WEBHOOK_SECRET) {
+    // ✅ Step 1: Verify webhook signature (optional but recommended)
+    const expected = crypto
+      .createHmac("sha256", process.env.DODO_WEBHOOK_SECRET)
+      .update(req.rawBody)
+      .digest("hex");
+
+    if (signature && signature !== expected) {
+      console.error("Invalid signature");
       return res.status(401).json({ error: "Invalid signature" });
     }
 
-    // ✅ Step 2: Extract user info and amount from payload
-    const { userId, paymentStatus, amount } = payload;
+    const event = req.body;
 
-    if (paymentStatus !== "SUCCESS") {
-      return res.status(200).json({ message: "Payment not completed" });
+    // ✅ Step 2: Only handle successful payments
+    if (event.type !== "payment.succeeded") {
+      return res.status(200).json({ message: "Event ignored" });
     }
 
-    // ✅ Step 3: Determine how many tokens to give
-    let tokensToAdd = 0;
-    if (amount === 100) tokensToAdd = 100;
-    else if (amount === 250) tokensToAdd = 300;
-    else if (amount === 500) tokensToAdd = 700;
+    const data = event.data;
+    const email = data.customer?.email;
+    const amount = data.total_amount; // amount in cents (e.g., 400)
 
-    // ✅ Step 4: Update user's token count
-    const user = await prisma.user.update({
-      where: { clerkId: userId },
+    if (!email) {
+      console.error("No email found in payload");
+      return res.status(400).json({ error: "Missing email" });
+    }
+
+    // ✅ Step 3: Find user in DB by email (or clerkId if you stored metadata)
+    const user = await prisma.user.findFirst({ where: { email } });
+
+    if (!user) {
+      console.error("User not found for email:", email);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // ✅ Step 4: Calculate tokens based on payment amount
+    let tokensToAdd = 50;
+
+    // ✅ Step 5: Update user's tokens
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
       data: { tokens: { increment: tokensToAdd } },
     });
 
-    console.log(`💰 User ${user.email} received ${tokensToAdd} tokens`);
-    res.status(200).json({ success: true });
+    console.log(`💰 Added ${tokensToAdd} tokens to ${email}`);
+    res.status(200).json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Webhook error:", error);
     res.status(500).json({ error: "Internal Server Error" });
